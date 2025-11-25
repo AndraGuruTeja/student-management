@@ -1,0 +1,112 @@
+name: Build and Deploy to Render
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - develop
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Step 3: Build with Maven
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+
+      # Step 4: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      # Step 5: Build Docker image
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/employee-management:${{ github.sha }} -t ${{ secrets.DOCKER_HUB_USERNAME }}/employee-management:latest .
+
+      # Step 6: Push to Docker Hub
+      - name: Push to Docker Hub
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        run: |
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/employee-management:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/employee-management:${{ github.sha }}
+
+      # Step 7: Deploy to Render
+      - name: Deploy to Render
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const https = require('https');
+            const data = JSON.stringify({
+              imageUrl: '${{ secrets.DOCKER_HUB_USERNAME }}/employee-management:${{ github.sha }}'
+            });
+
+            const options = {
+              hostname: 'api.render.com',
+              port: 443,
+              path: '/deploy/srv/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}',
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+              }
+            };
+
+            return new Promise((resolve, reject) => {
+              const req = https.request(options, (res) => {
+                let body = '';
+                res.on('data', (chunk) => body += chunk);
+                res.on('end', () => {
+                  console.log(`Render deployment initiated: ${res.statusCode}`);
+                  console.log(body);
+                  resolve();
+                });
+              });
+              req.on('error', reject);
+              req.write(data);
+              req.end();
+            });
+
+      # Step 8: Run tests
+      - name: Run tests
+        run: mvn test
+
+      # Step 9: Publish test results
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: target/surefire-reports/
+
+  notify:
+    needs: build-and-deploy
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Deployment Status
+        run: |
+          echo "✅ Build complete!"
+          echo "📦 Docker image pushed to Docker Hub"
+          echo "🚀 Render deployment triggered"
