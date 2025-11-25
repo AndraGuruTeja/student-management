@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Java / Maven
+# target/ should NOT be ignored - we need the JAR for Docker build
+*.class
+# *.jar - do not ignore .jar here, we need the built JAR
+*.war
+*.ear
+*.zip
+*.tar.gz
+.m2/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+*.iws
+*.eclipse
+
+# Build files
+build/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Logs
+*.log
