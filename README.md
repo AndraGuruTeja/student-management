@@ -1,13 +1,13 @@
-# Employee Management - Spring Boot Application
+# Student Management - Spring Boot Application
 
-A simple Spring Boot REST API for managing employee records with full CRUD operations.
+A simple Spring Boot REST API for managing student records with full CRUD operations.
 
 ## Features
 
-- **Create** new employees
-- **Read** employee details (by ID, email, department, or search by name)
-- **Update** employee information
-- **Delete** employees
+- **Create** new students
+- **Read** student details (by ID, email, roll number, course, semester, or search by name)
+- **Update** student information
+- **Delete** students
 - In-memory H2 database for quick testing
 - RESTful API endpoints
 - CORS enabled for frontend integration
@@ -15,23 +15,23 @@ A simple Spring Boot REST API for managing employee records with full CRUD opera
 ## Project Structure
 
 ```
-EmployeeManagement/
+StudentManagement/
 ├── pom.xml                              # Maven dependencies
 ├── Dockerfile                           # Docker containerization
 ├── .dockerignore                        # Docker build exclusions
 ├── README.md                            # This file
 └── src/
     ├── main/
-    │   ├── java/com/employee/
-    │   │   ├── EmployeeManagementApplication.java  # Main Spring Boot class
+    │   ├── java/com/student/
+    │   │   ├── StudentManagementApplication.java   # Main Spring Boot class
     │   │   ├── controller/
-    │   │   │   └── EmployeeController.java         # REST endpoints
+    │   │   │   └── StudentController.java          # REST endpoints
     │   │   ├── service/
-    │   │   │   └── EmployeeService.java            # Business logic
+    │   │   │   └── StudentService.java             # Business logic
     │   │   ├── repository/
-    │   │   │   └── EmployeeRepository.java         # Data access
+    │   │   │   └── StudentRepository.java          # Data access
     │   │   └── entity/
-    │   │       └── Employee.java                   # Entity model
+    │   │       └── Student.java                    # Entity model
     │   └── resources/
     │       └── application.properties               # Configuration
     └── test/
@@ -62,7 +62,7 @@ mvn spring-boot:run
 Or run the JAR directly:
 
 ```powershell
-java -jar target/employee-management-1.0.0.jar
+java -jar target/student-management-1.0.0.jar
 ```
 
 The application will start on `http://localhost:8080`
@@ -81,36 +81,37 @@ Open `http://localhost:8080/h2-console` and use:
 ```powershell
 cd C:\Users\andra\Desktop\EmployeeManagement
 mvn clean package
-docker build -t employee-management:latest .
+docker build -t student-management:latest .
 ```
 
 ### 2. Run the Docker container
 
 ```powershell
-docker run -d -p 8080:8080 --name employee-app employee-management:latest
+docker run -d -p 8080:8080 --name student-app student-management:latest
 ```
 
 ### 3. Verify the container is running
 
 ```powershell
-docker ps --filter name=employee-app
-docker logs employee-app --tail 50
+docker ps --filter name=student-app
+docker logs student-app --tail 50
 ```
 
 ### 4. Test the API
 
 ```powershell
-# Create an employee
+# Create a student
 $body = @{
     firstName = "John"
     lastName = "Doe"
     email = "john.doe@example.com"
-    department = "IT"
-    salary = 50000
+    rollNumber = "ST001"
+    course = "Computer Science"
+    semester = 1
     phoneNumber = "123-456-7890"
 } | ConvertTo-Json
 
-Invoke-RestMethod -UseBasicParsing -Uri http://localhost:8080/api/employees `
+Invoke-RestMethod -UseBasicParsing -Uri http://localhost:8080/api/students `
     -Method POST `
     -ContentType "application/json" `
     -Body $body
@@ -120,80 +121,84 @@ Invoke-RestMethod -UseBasicParsing -Uri http://localhost:8080/api/employees `
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/employees` | Create a new employee |
-| GET | `/api/employees` | Get all employees |
-| GET | `/api/employees/{id}` | Get employee by ID |
-| GET | `/api/employees/email/{email}` | Get employee by email |
-| GET | `/api/employees/department/{department}` | Get employees by department |
-| GET | `/api/employees/search/{firstName}` | Search employees by first name |
-| PUT | `/api/employees/{id}` | Update employee |
-| DELETE | `/api/employees/{id}` | Delete employee |
+| POST | `/api/students` | Create a new student |
+| GET | `/api/students` | Get all students |
+| GET | `/api/students/{id}` | Get student by ID |
+| GET | `/api/students/email/{email}` | Get student by email |
+| GET | `/api/students/roll/{rollNumber}` | Get student by roll number |
+| GET | `/api/students/course/{course}` | Get students by course |
+| GET | `/api/students/semester/{semester}` | Get students by semester |
+| GET | `/api/students/search/{firstName}` | Search students by first name |
+| PUT | `/api/students/{id}` | Update student |
+| DELETE | `/api/students/{id}` | Delete student |
 
 ## Example API Requests
 
-### Create Employee
+### Create Student
 ```bash
-POST /api/employees
+POST /api/students
 Content-Type: application/json
 
 {
   "firstName": "Alice",
   "lastName": "Smith",
   "email": "alice.smith@example.com",
-  "department": "HR",
-  "salary": 60000,
+  "rollNumber": "ST002",
+  "course": "Electronics",
+  "semester": 2,
   "phoneNumber": "987-654-3210"
 }
 ```
 
-### Get All Employees
+### Get All Students
 ```bash
-GET /api/employees
+GET /api/students
 ```
 
-### Get Employee by ID
+### Get Student by ID
 ```bash
-GET /api/employees/1
+GET /api/students/1
 ```
 
-### Update Employee
+### Update Student
 ```bash
-PUT /api/employees/1
+PUT /api/students/1
 Content-Type: application/json
 
 {
   "firstName": "Alice",
   "lastName": "Johnson",
   "email": "alice.johnson@example.com",
-  "department": "Engineering",
-  "salary": 75000,
+  "rollNumber": "ST002",
+  "course": "Mechanical Engineering",
+  "semester": 3,
   "phoneNumber": "555-123-4567"
 }
 ```
 
-### Delete Employee
+### Delete Student
 ```bash
-DELETE /api/employees/1
+DELETE /api/students/1
 ```
 
 ## Stop & Remove Docker Container
 
 ```powershell
-docker stop employee-app
-docker rm employee-app
+docker stop student-app
+docker rm student-app
 ```
 
 ## View Docker Image
 
 ```powershell
-docker images | grep employee-management
+docker images | grep student-management
 ```
 
 ## Troubleshooting
 
-- **Port 8080 already in use?** Run on a different port: `docker run -d -p 8081:8080 --name employee-app employee-management:latest`
+- **Port 8080 already in use?** Run on a different port: `docker run -d -p 8081:8080 --name student-app student-management:latest`
 - **Build fails?** Ensure Maven and Java 17+ are installed: `java -version` and `mvn -v`
-- **Container won't start?** Check logs: `docker logs employee-app`
+- **Container won't start?** Check logs: `docker logs student-app`
 
 ## Technology Stack
 

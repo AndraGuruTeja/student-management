@@ -1,5 +1,5 @@
-com\employee\EmployeeManagementApplication.class
-com\employee\controller\EmployeeController.class
-com\employee\entity\Employee.class
-com\employee\repository\EmployeeRepository.class
-com\employee\service\EmployeeService.class
+com\student\controller\StudentController.class
+com\student\repository\StudentRepository.class
+com\student\entity\Student.class
+com\student\service\StudentService.class
+com\student\StudentManagementApplication.class

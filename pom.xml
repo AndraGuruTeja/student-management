@@ -5,13 +5,13 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.employee</groupId>
-    <artifactId>employee-management</artifactId>
+    <groupId>com.student</groupId>
+    <artifactId>student-management</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Employee Management</name>
-    <description>Spring Boot Employee Management Application</description>
+    <name>Student Management</name>
+    <description>Spring Boot Student Management Application</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
